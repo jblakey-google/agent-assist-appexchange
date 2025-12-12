@@ -2,7 +2,7 @@ import { LightningElement, wire, track } from 'lwc';
 import { subscribe, MessageContext, APPLICATION_SCOPE } from 'lightning/messageService';
 import MY_TEST_CHANNEL from '@salesforce/messageChannel/MyTestChannel__c';
 
-export default class HelloWorld extends LightningElement {
+export default class MessageReceiver extends LightningElement {
     greeting = 'World';
     @track messages = [];
 
@@ -33,7 +33,7 @@ export default class HelloWorld extends LightningElement {
     }
 
     handleLMSMessage(message) {
-        console.log('HelloWorld LWC received LMS Message:', JSON.stringify(message));
+        console.log('MessageReceiver LWC received LMS Message:', JSON.stringify(message));
         this.messages.push({
             source: 'LMS',
             message: message.message,
@@ -43,7 +43,7 @@ export default class HelloWorld extends LightningElement {
 
     handleWindowMessage = (event) => {
         // Log all messages as requested
-        console.log('HelloWorld LWC received Window Message:', event.data);
+        console.log('MessageReceiver LWC received Window Message:', event.data);
         if (event.data && event.data.source === 'messageSender') {
              this.messages.push({
                 source: 'Window',

@@ -24,17 +24,17 @@ org-scratch-create: ## Create a new scratch org
 org-delete-scratch: ## Delete the scratch org
 	sf org delete scratch
 
-deploy-preview: ## Deploy source to default org in preview mode
-	sf project deploy preview
+# deploy-preview: ## Deploy source to default org in preview mode
+# 	sf project deploy preview
 
-deploy-start: ## Deploy source to default org in start mode
-	sf project deploy start
+# deploy-start: ## Deploy source to default org in start mode
+# 	sf project deploy start
 
-retrieve-preview: ## Retrieve source from default org in preview mode
-	sf project retrieve preview
+# retrieve-preview: ## Retrieve source from default org in preview mode
+# 	sf project retrieve preview
 
-retrieve-start: ## Retrieve source from default org in start mode
-	sf project retrieve start
+# retrieve-start: ## Retrieve source from default org in start mode
+# 	sf project retrieve start
 
 package-version-list: ## List package versions in the Dev Hub org
 	sf package version list --concise --packages $(PKG)
@@ -53,3 +53,23 @@ apex-list-log: ## List debug logs in scratch org in json format
 
 data-query: ## Run a data query in scratch org
 	sf data query -q "$(QUERY)"
+
+get-setup-urls:
+	@URL=$$(sf org display --json | jq -r '.result.instanceUrl'); \
+	SETUP_URL=$$(echo "$$URL" | sed 's/salesforce/salesforce-setup/g'); \
+	LIGHTNING_URL=$$(echo "$$URL" | sed 's/my.salesforce.com/lightning.force.com/g'); \
+	echo "Apex Classes: $${SETUP_URL}/lightning/setup/ApexClasses/home"; \
+	echo "CORS: $${SETUP_URL}/lightning/setup/CorsWhitelistEntries/home"; \
+	echo "Debug Mode: $${SETUP_URL}/lightning/setup/UserDebugModeSetup/home"; \
+	echo "Digital Experiences: $${SETUP_URL}/lightning/setup/NetworkSettings/home"; \
+	echo "External Client App Manager: $${SETUP_URL}/lightning/setup/ManageExternalClientApplication/home"; \
+	echo "Installed Packages: $${SETUP_URL}/lightning/setup/ImportedPackage/home"; \
+	echo "Lightning Components: $${SETUP_URL}/lightning/setup/LightningComponentBundles/home"; \
+	echo "Lightning Experience App Manager: $${SETUP_URL}/lightning/setup/NavigationMenus/home"; \
+	echo "Manage Users: $${SETUP_URL}/lightning/setup/ManageUsers/home"; \
+	echo "Omni-Channel Settings: $${SETUP_URL}/lightning/setup/OmniChannelSettings/home"; \
+	echo "Permission Sets: $${SETUP_URL}/lightning/setup/PermSets/home"; \
+	echo "Profiles: $${SETUP_URL}/lightning/setup/EnhancedProfiles/home"; \
+	echo "Queues: $${SETUP_URL}/lightning/setup/Queues/home"; \
+	echo "Service Console: $${LIGHTNING_URL}/lightning/page/home"; \
+	echo "Trusted URLs: $${SETUP_URL}/lightning/setup/SecurityCspTrustedSite/home"
