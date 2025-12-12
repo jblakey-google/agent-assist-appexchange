@@ -6,7 +6,8 @@
       "path": "force-app",
       "default": true,
       "package": "jordan-test",
-      "versionDescription": ""
+      "versionDescription": "",
+      "postInstallScript": "PostInstallScript"
     }
   ],
   "name": "sf-package-dev-lab",
