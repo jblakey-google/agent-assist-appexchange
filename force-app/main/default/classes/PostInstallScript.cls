@@ -8,7 +8,7 @@ global class PostInstallScript implements InstallHandler {
 
     global void onInstall(InstallContext context) {
         
-        if (context.isInstall() || context.isUpgrade()) {
+        if (context.previousVersion() == null || context.isUpgrade()) {
             createSupportQueue();
         }
     }
