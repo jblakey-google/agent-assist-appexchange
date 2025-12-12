@@ -24,17 +24,17 @@ org-scratch-create: ## Create a new scratch org
 org-delete-scratch: ## Delete the scratch org
 	sf org delete scratch
 
-# deploy-preview: ## Deploy source to default org in preview mode
-# 	sf project deploy preview
+deploy-preview: ## Deploy source to default org in preview mode
+	sf project deploy preview
 
-# deploy-start: ## Deploy source to default org in start mode
-# 	sf project deploy start
+deploy-start: ## Deploy source to default org in start mode
+	sf project deploy start
 
-# retrieve-preview: ## Retrieve source from default org in preview mode
-# 	sf project retrieve preview
+retrieve-preview: ## Retrieve source from default org in preview mode
+	sf project retrieve preview
 
-# retrieve-start: ## Retrieve source from default org in start mode
-# 	sf project retrieve start
+retrieve-start: ## Retrieve source from default org in start mode
+	sf project retrieve start
 
 package-version-list: ## List package versions in the Dev Hub org
 	sf package version list --concise --packages $(PKG)
