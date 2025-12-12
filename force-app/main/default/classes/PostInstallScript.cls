@@ -13,5 +13,22 @@ global class PostInstallScript implements InstallHandler {
         }
     }
 
-    private void createSupportQueue() {}
+    private void createSupportQueue() {
+        List<Group> supportQueues = [SELECT Id FROM Group WHERE Type = 'Queue' AND Name = 'Agent Assist Support' LIMIT 1];
+        
+        if (supportQueues.isEmpty()) {
+            Group supportQueue = new Group(Name = 'Agent Assist Support', Type = 'Queue');
+            insert supportQueue;
+
+            QueueSobject caseBinding = new QueueSobject(QueueId = supportQueue.Id, SobjectType = 'Case');
+            insert caseBinding;
+            
+            QueueSobject sessionBinding = new QueueSobject(QueueId = supportQueue.Id, SobjectType = 'MessagingSession');
+            insert sessionBinding;
+
+            System.debug('Support queue created');
+        } else {
+            System.debug('Support queue already exists');
+        }
+    }
 }
