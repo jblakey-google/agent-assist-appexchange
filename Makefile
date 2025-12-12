@@ -1,6 +1,6 @@
 .PHONY: help org-login org-list org-open org-scratch-create org-delete-scratch deploy-preview deploy-start retrieve-preview retrieve-start package-versions-list package-version-create apex-run apex-run-file apex-list-log data-query
 
-PKG ?= jordan-test
+PKG ?= agent-assist-experimental
 PKG_FLAG = $(if $(PKG),--package $(PKG),)
 
 help: ## Display this help message
