@@ -1,6 +1,6 @@
 .PHONY: help org-login org-list org-open org-scratch-create org-delete-scratch deploy-preview deploy-start retrieve-preview retrieve-start package-versions-list package-version-create apex-run apex-run-file apex-list-log data-query
 
-PKG ?= jordan-test
+PKG ?= agent-assist-experimental
 PKG_FLAG = $(if $(PKG),--package $(PKG),)
 
 help: ## Display this help message
@@ -42,9 +42,6 @@ package-version-list: ## List package versions in the Dev Hub org
 package-version-create: ## Create a new package version using $PKG
 	sf package version create --installation-key-bypass --package $(PKG)
 
-package-version-install: ## Install the latest package version using $PKG
-	sf package install --package $$(sf package version list --packages $(PKG) --json | jq -r '.result[].SubscriberPackageVersionId' | tail -n 1) --wait 10 --no-prompt
-
 apex-run: ## Run Apex code in scratch org in interactive mode
 	sf apex run
 
@@ -61,19 +58,18 @@ get-setup-urls:
 	@URL=$$(sf org display --json | jq -r '.result.instanceUrl'); \
 	SETUP_URL=$$(echo "$$URL" | sed 's/salesforce/salesforce-setup/g'); \
 	LIGHTNING_URL=$$(echo "$$URL" | sed 's/my.salesforce.com/lightning.force.com/g'); \
-	echo "Manage Users: $${SETUP_URL}/lightning/setup/ManageUsers/home"; \
-	echo "Installed Packages: $${SETUP_URL}/lightning/setup/ImportedPackage/home"; \
-	echo "App Menu: $${SETUP_URL}/lightning/setup/AppMenu/home"; \
-	echo "Service Console: $${LIGHTNING_URL}/lightning/page/home"; \
-	echo "External Client App Manager: $${SETUP_URL}/lightning/setup/ManageExternalClientApplication/home"; \
-	echo "Lightning Experience App Manager: $${SETUP_URL}/lightning/setup/NavigationMenus/home"; \
-	echo "Lightning Components: $${SETUP_URL}/lightning/setup/LightningComponentBundles/home"; \
-	echo "Permission Sets: $${SETUP_URL}/lightning/setup/PermSets/home"; \
-	echo "Profiles: $${SETUP_URL}/lightning/setup/EnhancedProfiles/home"; \
-	echo "Trusted URLs: $${SETUP_URL}/lightning/setup/SecurityCspTrustedSite/home"; \
-	echo "Digital Experiences: $${SETUP_URL}/lightning/setup/NetworkSettings/home"; \
 	echo "Apex Classes: $${SETUP_URL}/lightning/setup/ApexClasses/home"; \
 	echo "CORS: $${SETUP_URL}/lightning/setup/CorsWhitelistEntries/home"; \
 	echo "Debug Mode: $${SETUP_URL}/lightning/setup/UserDebugModeSetup/home"; \
-	echo "Queues: $${SETUP_URL}/lightning/setup/Queues/home"; \
+	echo "Digital Experiences: $${SETUP_URL}/lightning/setup/NetworkSettings/home"; \
+	echo "External Client App Manager: $${SETUP_URL}/lightning/setup/ManageExternalClientApplication/home"; \
+	echo "Installed Packages: $${SETUP_URL}/lightning/setup/ImportedPackage/home"; \
+	echo "Lightning Components: $${SETUP_URL}/lightning/setup/LightningComponentBundles/home"; \
+	echo "Lightning Experience App Manager: $${SETUP_URL}/lightning/setup/NavigationMenus/home"; \
+	echo "Manage Users: $${SETUP_URL}/lightning/setup/ManageUsers/home"; \
 	echo "Omni-Channel Settings: $${SETUP_URL}/lightning/setup/OmniChannelSettings/home"; \
+	echo "Permission Sets: $${SETUP_URL}/lightning/setup/PermSets/home"; \
+	echo "Profiles: $${SETUP_URL}/lightning/setup/EnhancedProfiles/home"; \
+	echo "Queues: $${SETUP_URL}/lightning/setup/Queues/home"; \
+	echo "Service Console: $${LIGHTNING_URL}/lightning/page/home"; \
+	echo "Trusted URLs: $${SETUP_URL}/lightning/setup/SecurityCspTrustedSite/home"

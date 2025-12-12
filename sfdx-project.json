@@ -5,15 +5,15 @@
       "versionNumber": "0.1.0.NEXT",
       "path": "force-app",
       "default": true,
-      "package": "jordan-test",
+      "package": "agent-assist-experimental",
       "versionDescription": ""
     }
   ],
   "name": "sf-package-dev-lab",
-  "namespace": "",
+  "namespace": "agent_assist",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "64.0",
   "packageAliases": {
-    "jordan-test": "0Hoao0000002pjBCAQ"
+    "agent-assist-experimental": "0Hoao0000002pxhCAA"
   }
 }
