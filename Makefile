@@ -68,9 +68,11 @@ get-setup-urls:
 	echo "Lightning Components: $${SETUP_URL}/lightning/setup/LightningComponentBundles/home"; \
 	echo "Lightning Experience App Manager: $${SETUP_URL}/lightning/setup/NavigationMenus/home"; \
 	echo "Manage Users: $${SETUP_URL}/lightning/setup/ManageUsers/home"; \
+	echo "Messaging Settings: $${SETUP_URL}/lightning/setup/LiveMessageSetup/home"; \
 	echo "Omni-Channel Settings: $${SETUP_URL}/lightning/setup/OmniChannelSettings/home"; \
 	echo "Permission Sets: $${SETUP_URL}/lightning/setup/PermSets/home"; \
 	echo "Profiles: $${SETUP_URL}/lightning/setup/EnhancedProfiles/home"; \
 	echo "Queues: $${SETUP_URL}/lightning/setup/Queues/home"; \
+	echo "Service Cloud Voice Partner Telephony: $${SETUP_URL}/lightning/setup/ServiceCloudVoicePartnerTelephony/home"; \
 	echo "Service Console: $${LIGHTNING_URL}/lightning/page/home"; \
-	echo "Trusted URLs: $${SETUP_URL}/lightning/setup/SecurityCspTrustedSite/home"
+	echo "Trusted URLs: $${SETUP_URL}/lightning/setup/SecurityCspTrustedSite/home";

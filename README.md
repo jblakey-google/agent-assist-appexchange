@@ -23,3 +23,17 @@ The `sfdx-project.json` file contains useful configuration information for your 
 
 - [Scratch Org Config Values](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm)
 - [Metadata Coverage Winter '26](https://developer.salesforce.com/docs/metadata-coverage/66)
+- [Metadata Types List](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_types_list.htm)
+
+### Metadata Types
+- [Classes Metadata](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_classes.htm)
+- [MessagingChannel Metadata](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_messagingchannel.htm)
+- [PermissionSet Metadata](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_permissionset.htm)
+- [Queue Metadata](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_queue.htm)
+- [QueueRoutingConfig Metadata](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_queueroutingconfig.htm)
+- [ServicePresenceStatus Metadata](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_servicepresencestatus.htm)
+
+### Settings Metadata
+- [Settings Metadata](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_settings.htm)
+- [ServiceCloudVoiceSettings Metadata](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_servicecloudvoicesettings.htm)
+- [LiveMessageSettings Metadata](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_livemessagesettings.htm)

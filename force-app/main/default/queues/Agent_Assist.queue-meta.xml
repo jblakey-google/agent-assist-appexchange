@@ -3,10 +3,11 @@
     <doesSendEmailToMembers>false</doesSendEmailToMembers>
     <name>Agent Assist</name>
     <queueRoutingConfig>Agent_Assist</queueRoutingConfig>
-    <queueSobject>
-        <sobjectType>MessagingEndUser</sobjectType>
-    </queueSobject>
+
     <queueSobject>
         <sobjectType>MessagingSession</sobjectType>
+    </queueSobject>
+    <queueSobject>
+        <sobjectType>VoiceCall</sobjectType>
     </queueSobject>
 </Queue>

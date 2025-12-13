@@ -1,6 +1,6 @@
 import { LightningElement, wire, track } from 'lwc';
 import { subscribe, MessageContext, APPLICATION_SCOPE } from 'lightning/messageService';
-import MY_TEST_CHANNEL from '@salesforce/messageChannel/MyTestChannel__c';
+import AGENT_ASSIST_CHANNEL from '@salesforce/messageChannel/Agent_Assist__c';
 
 export default class MessageReceiver extends LightningElement {
     greeting = 'World';
@@ -25,7 +25,7 @@ export default class MessageReceiver extends LightningElement {
         if (!this.subscription) {
             this.subscription = subscribe(
                 this.messageContext,
-                MY_TEST_CHANNEL,
+                AGENT_ASSIST_CHANNEL,
                 (message) => this.handleLMSMessage(message),
                 { scope: APPLICATION_SCOPE }
             );

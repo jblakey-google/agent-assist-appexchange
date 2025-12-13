@@ -1,6 +1,6 @@
 import { LightningElement, wire } from 'lwc';
 import { publish, MessageContext } from 'lightning/messageService';
-import MY_TEST_CHANNEL from '@salesforce/messageChannel/MyTestChannel__c';
+import AGENT_ASSIST_CHANNEL from '@salesforce/messageChannel/Agent_Assist__c';
 
 export default class MessageSender extends LightningElement {
     @wire(MessageContext)
@@ -23,7 +23,7 @@ export default class MessageSender extends LightningElement {
             message: 'Hello from LMS',
             timestamp: new Date().toISOString()
         };
-        publish(this.messageContext, MY_TEST_CHANNEL, payload);
+        publish(this.messageContext, AGENT_ASSIST_CHANNEL, payload);
         console.log('messageSender sent LMS message');
     }
 }

@@ -5,7 +5,8 @@
     "EnableSetPasswordInApi",
     "LiveMessage",
     "ServiceCloud",
-    "LiveAgent"
+    "LiveAgent",
+    "ServiceCloudVoicePartnerTelephony:1"
   ],
   "settings": {
     "lightningExperienceSettings": {
