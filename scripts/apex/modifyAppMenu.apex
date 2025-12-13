@@ -1,30 +1,21 @@
-// Script to hide specific App Menu items
+// Script to hide everything EXCEPT specific App Menu items
 
-Set<String> appsToHide = new Set<String>{
-    'Sales',
-    'Marketing',
-    'Community',
-    'Sites',
-    'Chatter',
-    'Content',
-    'LightningSales',
-    'LightningBolt',
-    'SalesforceCMS',
-    'SalesCloudMobile',
-    'Approvals',
-    'MSJApp',
-    'CPQIntegrationUserApp'
+Set<String> appsToKeep = new Set<String>{
+    'LightningService', // Standard Service Console
+    'Service',          // Standard Service App
+    'GCP_Agent_Assist',           // GCP Agent Assist (Local name)
+    'agent_assist__GCP_Agent_Assist' // GCP Agent Assist (Namespaced name, just in case)
 };
 
 List<AppMenuItem> allApps = [SELECT Id, Name, Label FROM AppMenuItem];
 System.debug('Found ' + allApps.size() + ' apps.');
 
 for (AppMenuItem app : allApps) {
-    Boolean makeVisible = true; // Default to visible
+    // Default to hidden unless it's in the keep list
+    Boolean makeVisible = false;
     
-    // If in the hide list, set to false
-    if (appsToHide.contains(app.Name)) {
-        makeVisible = false;
+    if (appsToKeep.contains(app.Name)) {
+        makeVisible = true;
     }
     
     try {

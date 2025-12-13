@@ -41,7 +41,13 @@ package-version-list: ## List package versions in the Dev Hub org
 	sf package version list --concise --packages $(PKG)
 
 package-version-create: ## Create a new package version using $PKG
-	sf package version create --installation-key-bypass --package $(PKG)
+	sf package version create --installation-key-bypass --package $(PKG) --definition-file config/project-scratch-def.json
+
+package-version-install: ## Install the latest package version
+	@echo "Finding latest package version..."
+	@LATEST_VERSION=$$(sf package version list --packages $(PKG) --concise --json | jq -r '.result | sort_by(.CreatedDate) | reverse | .[0].SubscriberPackageVersionId'); \
+	echo "Installing latest version: $$LATEST_VERSION"; \
+	sf package install --package $$LATEST_VERSION --wait 10 --publish-wait 10
 
 apex-run: ## Run Apex code in scratch org in interactive mode
 	sf apex run

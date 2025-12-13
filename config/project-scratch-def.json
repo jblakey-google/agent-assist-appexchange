@@ -1,6 +1,6 @@
 {
   "orgName": "Google",
-  "edition": "Developer",
+  "edition": "Enterprise",
   "features": [
     "EnableSetPasswordInApi",
     "LiveMessage",
