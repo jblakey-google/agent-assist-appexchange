@@ -1,0 +1,48 @@
+public with sharing class ExternalClientAppCreator {
+
+    /**
+    * The name of the External Client App.
+    */
+    private static final String APP_NAME = 'Agent_Assist_OAuth';
+
+    /**
+    * orgScopedExternalApp value, which is orgId:appName.
+    */
+    private static final String FULLY_QUALIFIED_APP_NAME = UserInfo.getOrganizationId() + ':' + APP_NAME;
+
+    @AuraEnabled
+    public static String setupApp(String contactEmail) {
+
+        try {
+            SoapService.create(
+                createAppMetadataXML(contactEmail)
+            );
+            return 'Successfully initiated creation of External Client App and its settings.';
+        } catch (Exception e) {
+
+            System.debug(LoggingLevel.ERROR, '[ExternalClientAppCreator] External Client App Setup Failed: ' + e.getMessage());
+
+            throw new AuraHandledException('Error during App Setup: ' + e.getMessage());
+
+        }
+    }
+
+    /**
+     * Creates an XML string of [ExternalClientApplication](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_externalclientapplication.htm) metadata.
+     *
+     * @see https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_externalclientapplication.htm
+     */
+    private static String createAppMetadataXML(String contactEmail) {
+
+        return '<met:metadata xsi:type="met:ExternalClientApplication" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
+            '<met:fullName>' + APP_NAME + '</met:fullName>' +
+            '<met:label>Agent Assist Oauth App</met:label>' +
+            '<met:contactEmail>' + contactEmail + '</met:contactEmail>' +
+            '<met:description>Agent Assist Oauth</met:description>' +
+            '<met:distributionState>Local</met:distributionState>' +
+            '<met:isProtected>false</met:isProtected>' +
+            '<met:orgScopedExternalApp>' + FULLY_QUALIFIED_APP_NAME + '</met:orgScopedExternalApp>' +
+            '</met:metadata>';
+
+    }
+}
