@@ -3,7 +3,7 @@ public with sharing class ExternalClientAppCreator {
     /**
     * The name of the External Client App.
     */
-    private static final String APP_NAME = 'Agent_Assist_OAuth';
+    private static final String APP_NAME = 'GCP_Agent_Assist_OAuth';
 
     /**
     * orgScopedExternalApp value, which is orgId:appName.
@@ -11,19 +11,19 @@ public with sharing class ExternalClientAppCreator {
     private static final String FULLY_QUALIFIED_APP_NAME = UserInfo.getOrganizationId() + ':' + APP_NAME;
 
     @AuraEnabled
-    public static String setupApp(String contactEmail) {
+    public static void setupApp(String contactEmail) {
 
         try {
             SoapService.create(
                 createAppMetadataXML(contactEmail)
             );
-            return 'Successfully initiated creation of External Client App and its settings.';
+
+            System.debug('[ExternalClientAppCreator] Completed setupApp.');
         } catch (Exception e) {
 
             System.debug(LoggingLevel.ERROR, '[ExternalClientAppCreator] External Client App Setup Failed: ' + e.getMessage());
 
             throw new AuraHandledException('Error during App Setup: ' + e.getMessage());
-
         }
     }
 
@@ -36,7 +36,7 @@ public with sharing class ExternalClientAppCreator {
 
         return '<met:metadata xsi:type="met:ExternalClientApplication" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
             '<met:fullName>' + APP_NAME + '</met:fullName>' +
-            '<met:label>Agent Assist Oauth App</met:label>' +
+            '<met:label>GCP Agent Assist Oauth App</met:label>' +
             '<met:contactEmail>' + contactEmail + '</met:contactEmail>' +
             '<met:description>Agent Assist Oauth</met:description>' +
             '<met:distributionState>Local</met:distributionState>' +

@@ -1,17 +1,43 @@
+/**
+ * @fileoverview A controller for the External Client App `contactEmail` view.
+ */
+
+// @ts-check
 import { LightningElement } from 'lwc';
 import setupApp from '@salesforce/apex/ExternalClientAppCreator.setupApp';
+// @ts-expect-error This is an old deprecated implementation.
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class ExternalClientAppForm extends LightningElement {
+    /**
+     * @type {string}
+     * 
+     * @description The email of the contact to create the external client app for.
+     * 
+     * @default ''
+     */
     contactEmail = '';
+
+    doesExternalAppExist = false;
+
     isLoading = false;
 
+    /**
+     * @description Updates the contactEmail on change.
+     * 
+     * @param {InputEvent} event 
+     */
     handleEmailChange(event) {
-        this.contactEmail = event.target.value;
+        if("value" in event.target && typeof event.target.value === "string") {
+            this.contactEmail = event.target.value;
+        }
     }
 
 
-    async handleCreate() {
+    /**
+     * @description A click handler that creates the external client app.
+     */
+    handleCreate() {
         if (!this.contactEmail) {
             this.showToast('Error', 'Please fill in all fields', 'error');
             return;
@@ -19,13 +45,11 @@ export default class ExternalClientAppForm extends LightningElement {
 
         this.isLoading = true;
 
-        try {
-            await setupApp({ contactEmail: this.contactEmail }).catch(err).
-
+        setupApp({ contactEmail: this.contactEmail }).then(() => {
             this.showToast('Success', 'External Client App created successfully', 'success');
-            
+    
             this.contactEmail = '';
-        } catch(error) {
+        }).catch((error) => {
                 let message = 'Unknown error';
                 if (Array.isArray(error.body)) {
                     message = error.body.map(e => e.message).join(', ');
@@ -34,11 +58,18 @@ export default class ExternalClientAppForm extends LightningElement {
                 }
                 this.showToast('Error', 'Error creating external client app: ' + message, 'error');
                 console.error('Error creating external client app:', error);
-        } finally {
+        }).finally(() => {
             this.isLoading = false;
-        }
+        })
     }
 
+    /**
+     * @description Shows a toast message.
+     * 
+     * @param {string} title 
+     * @param {string} message 
+     * @param {string} variant 
+     */
     showToast(title, message, variant) {
         const event = new ShowToastEvent({
             title: title,

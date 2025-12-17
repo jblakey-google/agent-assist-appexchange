@@ -9,7 +9,7 @@ public with sharing class SoapService {
     */
     private static final String METADATA_API_URL = '/services/Soap/m/64.0';
 
-    private static void create(String metadataXml) {
+    public static void create(String metadataXml) {
 
         String soapEnvelope = buildSoapEnvelope(metadataXml, 'create');
 
