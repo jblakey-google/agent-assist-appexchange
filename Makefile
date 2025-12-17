@@ -77,6 +77,7 @@ get-setup-urls:
 	@URL=$$(sf org display --json | jq -r '.result.instanceUrl'); \
 	SETUP_URL=$$(echo "$$URL" | sed 's/salesforce/salesforce-setup/g'); \
 	LIGHTNING_URL=$$(echo "$$URL" | sed 's/my.salesforce.com/lightning.force.com/g'); \
+	echo "Service Console: $${LIGHTNING_URL}/lightning/page/home"; \
 	echo "Apex Classes: $${SETUP_URL}/lightning/setup/ApexClasses/home"; \
 	echo "CORS: $${SETUP_URL}/lightning/setup/CorsWhitelistEntries/home"; \
 	echo "Debug Mode: $${SETUP_URL}/lightning/setup/UserDebugModeSetup/home"; \
@@ -92,5 +93,6 @@ get-setup-urls:
 	echo "Profiles: $${SETUP_URL}/lightning/setup/EnhancedProfiles/home"; \
 	echo "Queues: $${SETUP_URL}/lightning/setup/Queues/home"; \
 	echo "Service Cloud Voice Partner Telephony: $${SETUP_URL}/lightning/setup/ServiceCloudVoicePartnerTelephony/home"; \
-	echo "Service Console: $${LIGHTNING_URL}/lightning/page/home"; \
-	echo "Trusted URLs: $${SETUP_URL}/lightning/setup/SecurityCspTrustedSite/home";
+	echo "Trusted URLs: $${SETUP_URL}/lightning/setup/SecurityCspTrustedSite/home"; \
+	echo "Routing Configurations: $${SETUP_URL}/lightning/setup/QueueRoutingConfigSettings/home"; \
+	echo "Service Channels: $${SETUP_URL}/lightning/setup/ServiceChannelSettings/home";

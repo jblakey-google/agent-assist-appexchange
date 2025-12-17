@@ -1,8 +1,8 @@
 <template>
     <lightning-card title="Create Trusted Site" icon-name="standard:invst_profile">
         <div class="slds-p-around_medium">
-            <lightning-input label="Site Name" value={siteName} onchange={handleNameChange} required></lightning-input>
-            <lightning-input label="Site URL" value={siteUrl} onchange={handleUrlChange} type="url" required></lightning-input>
+            <lightning-input label="Site Name" value={siteName} onchange={handleNameChange} required placeholder="e.g. GoogleApi"></lightning-input>
+            <lightning-input label="Site URL" value={siteUrl} onchange={handleUrlChange} type="url" required placeholder="e.g. https://api.google.com"></lightning-input>
             <div class="slds-m-top_medium">
                 <lightning-button label="Create Site" variant="brand" onclick={handleCreate} disabled={isLoading}></lightning-button>
             </div>

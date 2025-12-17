@@ -7,14 +7,14 @@ public class CspTrustedSiteCreator {
      */
     @AuraEnabled
     public static void createTrustedSite(String siteUrl, String siteName) {
-        
+
         // Use dynamic URL and Session ID
         String baseUrl = URL.getOrgDomainUrl().toExternalForm();
         String apiUrl = '/services/data/v60.0/sobjects/CspTrustedSite';
 
         HttpRequest req = new HttpRequest();
         req.setEndpoint(baseUrl + apiUrl);
-        req.setHeader('Authorization', 'OAuth ' + UserInfo.getSessionId());
+        req.setHeader('Authorization', 'OAuth ' + getSessionId());
         req.setMethod('POST');
         req.setHeader('Content-Type', 'application/json');
         req.setHeader('Accept', 'application/json');
@@ -43,11 +43,27 @@ public class CspTrustedSiteCreator {
                 System.debug('Successfully created CspTrustedSite: ' + siteName);
             } else {
                 System.debug(LoggingLevel.ERROR, 'Failed to create CspTrustedSite. Status: ' + res.getStatusCode() + ', Body: ' + res.getBody());
-                // Handle errors appropriately (throw exception, log issue, etc.)
+                String errorMessage = 'Failed to create CspTrustedSite. API returned status: ' + res.getStatusCode() + ' ' + res.getBody();
+                AuraHandledException e = new AuraHandledException(errorMessage);
+                e.setMessage(errorMessage);
+                throw e;
             }
         } catch (Exception e) {
             System.debug(LoggingLevel.ERROR, 'HTTP Request failed: ' + e.getMessage());
-            // Handle exceptions
+            String errorMessage = 'Error creating trusted site: ' + e.getMessage();
+            AuraHandledException ahe = new AuraHandledException(errorMessage);
+            ahe.setMessage(errorMessage);
+            throw ahe;
         }
+    }
+
+    private static String getSessionId() {
+        if (Test.isRunningTest()) {
+            return UserInfo.getSessionId();
+        }
+        String content = Page.SessionIdGetter.getContent().toString();
+        String s = 'Start_Of_Session_Id';
+        String e = 'End_Of_Session_Id';
+        return content.substringBetween(s, e);
     }
 }
