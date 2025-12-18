@@ -4,7 +4,7 @@
 
 // @ts-check
 import { LightningElement } from 'lwc';
-import setupApp from '@salesforce/apex/ExternalClientAppCreator.setupApp';
+import createExternalClientApp from '@salesforce/apex/ExternalClientApp.create';
 // @ts-expect-error This is an old deprecated implementation.
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
@@ -37,30 +37,35 @@ export default class ExternalClientAppForm extends LightningElement {
     /**
      * @description A click handler that creates the external client app.
      */
-    handleCreate() {
+    async handleCreate() {
         if (!this.contactEmail) {
             this.showToast('Error', 'Please fill in all fields', 'error');
             return;
         }
 
-        this.isLoading = true;
+        try {
+            this.isLoading = true;
 
-        setupApp({ contactEmail: this.contactEmail }).then(() => {
+            await createExternalClientApp({ contactEmail: this.contactEmail })
+
             this.showToast('Success', 'External Client App created successfully', 'success');
-    
+        
             this.contactEmail = '';
-        }).catch((error) => {
+        } catch(error) {
                 let message = 'Unknown error';
+
                 if (Array.isArray(error.body)) {
                     message = error.body.map(e => e.message).join(', ');
                 } else if (typeof error.body.message === 'string') {
                     message = error.body.message;
                 }
+
                 this.showToast('Error', 'Error creating external client app: ' + message, 'error');
+
                 console.error('Error creating external client app:', error);
-        }).finally(() => {
+        } finally {
             this.isLoading = false;
-        })
+        }
     }
 
     /**

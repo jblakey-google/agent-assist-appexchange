@@ -1,4 +1,4 @@
-public with sharing class ExternalClientAppCreator {
+public class ExternalClientApp {
 
     /**
     * The name of the External Client App.
@@ -11,17 +11,17 @@ public with sharing class ExternalClientAppCreator {
     private static final String FULLY_QUALIFIED_APP_NAME = UserInfo.getOrganizationId() + ':' + APP_NAME;
 
     @AuraEnabled
-    public static void setupApp(String contactEmail) {
+    public static void create(String contactEmail) {
 
         try {
             SoapService.create(
                 createAppMetadataXML(contactEmail)
             );
 
-            System.debug('[ExternalClientAppCreator] Completed setupApp.');
+            System.debug('[ExternalClientApp] Completed setupApp.');
         } catch (Exception e) {
 
-            System.debug(LoggingLevel.ERROR, '[ExternalClientAppCreator] External Client App Setup Failed: ' + e.getMessage());
+            System.debug(LoggingLevel.ERROR, '[ExternalClientApp] External Client App Setup Failed: ' + e.getMessage());
 
             throw new AuraHandledException('Error during App Setup: ' + e.getMessage());
         }
