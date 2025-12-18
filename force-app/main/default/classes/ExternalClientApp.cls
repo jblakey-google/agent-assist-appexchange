@@ -12,11 +12,10 @@ public class ExternalClientApp {
 
     @AuraEnabled
     public static void create(String contactEmail) {
-
         try {
-            SoapService.create(
-                createAppMetadataXML(contactEmail)
-            );
+            String xml = getExternalClientApplicationXml(contactEmail);
+
+            SoapService.create(xml);
 
             System.debug('[ExternalClientApp] Completed setupApp.');
         } catch (Exception e) {
@@ -32,17 +31,17 @@ public class ExternalClientApp {
      *
      * @see https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_externalclientapplication.htm
      */
-    private static String createAppMetadataXML(String contactEmail) {
+    private static String getExternalClientApplicationXml(String contactEmail) {
+        Map<String, Object> metaData = new Map<String, Object>{
+            'fullName' => APP_NAME,
+            'label' => 'GCP Agent Assist Oauth App',
+            'contactEmail' => contactEmail,
+            'description' => 'Agent Assist Oauth',
+            'distributionState' => 'Local',
+            'isProtected' => false,
+            'orgScopedExternalApp' => FULLY_QUALIFIED_APP_NAME
+        };
 
-        return '<met:metadata xsi:type="met:ExternalClientApplication" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
-            '<met:fullName>' + APP_NAME + '</met:fullName>' +
-            '<met:label>GCP Agent Assist Oauth App</met:label>' +
-            '<met:contactEmail>' + contactEmail + '</met:contactEmail>' +
-            '<met:description>Agent Assist Oauth</met:description>' +
-            '<met:distributionState>Local</met:distributionState>' +
-            '<met:isProtected>false</met:isProtected>' +
-            '<met:orgScopedExternalApp>' + FULLY_QUALIFIED_APP_NAME + '</met:orgScopedExternalApp>' +
-            '</met:metadata>';
-
+        return XmlMapper.init('ExternalClientApplication', 'met').add(metaData).toXml();
     }
 }
