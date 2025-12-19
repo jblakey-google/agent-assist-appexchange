@@ -1,14 +1,24 @@
 <template>
-    <lightning-card title="Create Trusted Site" icon-name="standard:invst_profile">
+    <lightning-card title="Create Trusted URLs" icon-name="standard:custom">
         <div class="slds-p-around_medium">
-            <lightning-input label="Site Name" value={siteName} onchange={handleNameChange} required placeholder="e.g. GoogleApi"></lightning-input>
-            <lightning-input label="Site URL" value={siteUrl} onchange={handleUrlChange} type="url" required placeholder="e.g. https://api.google.com"></lightning-input>
+            <p>Please create the following Trusted URLs to enable communication with external services for Agent Assist. You can manage these in <a href="/lightning/setup/SecurityCspTrustedSite/home" target="_blank">Trusted URLs</a>.</p>
+            
+            <ul>
+                <li><b>My Salesforce Domain:</b> https://YOUR_SALESFORCE_DOMAIN.my.salesforce.com</li>
+                <li><b>UI Connector (HTTPS):</b> https://YOUR_UI_CONNECTOR_CLOUD_RUN_URL</li>
+                <li><b>UI Connector (WebSocket):</b> wss://YOUR_UI_CONNECTOR_CLOUD_RUN_URL</li>
+            </ul>
+            
+            <lightning-input name="siteName" label="Site Name" value={siteName} onchange={handleNameChange} type="text" required placeholder="e.g. MySalesforceDomain"></lightning-input>
+            <lightning-input name="siteUrl" label="Site URL" value={siteUrl} onchange={handleUrlChange} type="url" required placeholder="e.g. https://YOUR_SALESFORCE_DOMAIN.my.salesforce.com"></lightning-input>
             <div class="slds-m-top_medium">
                 <lightning-button label="Create Site" variant="brand" onclick={handleCreate} disabled={isLoading}></lightning-button>
             </div>
             <div if:true={isLoading} class="exampleHolder">
                 <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
             </div>
+
+            <p><b>Note:</b> The Trusted URL API Name can only contain underscores and alphanumeric characters. It must be unique, begin with a letter, not include spaces, not end with an underscore, and not contain two consecutive underscores.</p>
         </div>
     </lightning-card>
 </template>

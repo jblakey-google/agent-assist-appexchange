@@ -2,7 +2,7 @@
     <lightning-card title="Message Receiver" icon-name="custom:custom14">
         <div class="slds-m-around_medium">
             <p>Hello, {greeting}!</p>
-            <lightning-input label="Name" value={greeting} onchange={changeHandler}></lightning-input>
+            <lightning-input name="firstName" label="Name" value={greeting} onchange={changeHandler}></lightning-input>
 
             <div class="slds-m-top_medium">
                 <h3 class="slds-text-heading_small">Received Messages!:</h3>
