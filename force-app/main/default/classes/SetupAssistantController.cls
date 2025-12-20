@@ -1,9 +1,12 @@
 public with sharing class SetupAssistantController {
 
+    private static final String QUEUE_DEVELOPER_NAME = 'Agent_Assist';
+
     @AuraEnabled
     public static String deployMetadata() {
         try {
             String sessionId = getSessionIdFromVF();
+            String userId = UserInfo.getUserId();
             
             // --- PHASE 1: Callouts (Metadata API) ---
             // Must happen BEFORE any DML to avoid "Uncommitted Work" errors
@@ -22,12 +25,14 @@ public with sharing class SetupAssistantController {
             // --- PHASE 2: DML (Database Operations) ---
             // 4. Create the Queue (Group) record
             createAgentAssistQueue();
+
+            assignCurrentUserToQueue(userId);
             
             // 5. Link the Queue to the Routing Config
             linkQueueToConfig();
 
             // 6. Assign the Permission Set to the Current User (The Final Step)
-            assignPermissionSetToCurrentUser();
+            assignPermissionSetToCurrentUser(userId);
             
             return 'Success';
         } catch (Exception e) {
@@ -37,14 +42,13 @@ public with sharing class SetupAssistantController {
     }
 
     // --- NEW: Auto-Assign the Perm Set ---
-    private static void assignPermissionSetToCurrentUser() {
+    private static void assignPermissionSetToCurrentUser(String currentUserId) {
         try {
             // 1. Find the Perm Set we just created
             List<PermissionSet> ps = [SELECT Id FROM PermissionSet WHERE Name = 'Agent_Assist_Messaging' LIMIT 1];
             if (ps.isEmpty()) return;
             
             // 2. Check if already assigned
-            Id currentUserId = UserInfo.getUserId();
             List<PermissionSetAssignment> existing = [
                 SELECT Id FROM PermissionSetAssignment 
                 WHERE AssigneeId = :currentUserId AND PermissionSetId = :ps[0].Id
@@ -63,14 +67,14 @@ public with sharing class SetupAssistantController {
     }
 
     private static void createAgentAssistQueue() {
-        List<Group> existingQueues = [SELECT Id FROM Group WHERE Type = 'Queue' AND DeveloperName = 'Agent_Assist' LIMIT 1];
+        List<Group> existingQueues = [SELECT Id FROM Group WHERE Type = 'Queue' AND DeveloperName = :QUEUE_DEVELOPER_NAME LIMIT 1];
         if (!existingQueues.isEmpty()) {
             return;
         }
 
         Group agentAssistQueue = new Group();
         agentAssistQueue.Name = 'Agent Assist';
-        agentAssistQueue.DeveloperName = 'Agent_Assist';
+        agentAssistQueue.DeveloperName = QUEUE_DEVELOPER_NAME;
         agentAssistQueue.Type = 'Queue';
         agentAssistQueue.DoesSendEmailToMembers = false;
         insert agentAssistQueue;
@@ -97,6 +101,30 @@ public with sharing class SetupAssistantController {
 
         if (!queueSobjects.isEmpty()) {
             insert queueSobjects;
+        }
+    }
+
+    private static void assignCurrentUserToQueue(Id userId) {
+        try {
+            Group queue = [SELECT Id FROM Group WHERE Type = 'Queue' AND DeveloperName = :QUEUE_DEVELOPER_NAME LIMIT 1];
+            
+            Integer existing = [SELECT Count() FROM GroupMember 
+                                WHERE GroupId = :queue.Id AND UserOrGroupId = :userId];
+            
+            if (existing == 0) {
+                GroupMember assignment = new GroupMember(
+                    GroupId = queue.Id,
+                    UserOrGroupId = userId
+                );
+                insert assignment;
+                System.debug('User assigned to queue: ' + QUEUE_DEVELOPER_NAME);
+            }
+        } catch (QueryException e) {
+            System.debug(LoggingLevel.ERROR, '[assignCurrentUserToQueue] Queue not found: ' + QUEUE_DEVELOPER_NAME + '\n ' + e.getMessage());
+            throw new CalloutException('[assignCurrentUserToQueue] Queue not found: ' + QUEUE_DEVELOPER_NAME + '\n ' + e.getMessage());
+        } catch (Exception e) {
+            System.debug('[assignCurrentUserToQueue] Failed to assign user to queue.');
+            throw new CalloutException('[assignCurrentUserToQueue] Error when assigning user to queue: ' + QUEUE_DEVELOPER_NAME + '\n ' + e.getMessage());
         }
     }
 
