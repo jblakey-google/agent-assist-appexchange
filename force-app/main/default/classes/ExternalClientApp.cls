@@ -10,6 +10,11 @@ public class ExternalClientApp {
     */
     private static final String FULLY_QUALIFIED_APP_NAME = UserInfo.getOrganizationId() + ':' + APP_NAME;
 
+    public class ECAWrapper {
+        @AuraEnabled public String Id;
+        @AuraEnabled public String ContactEmail;
+    }
+
     @AuraEnabled
     public static void create(String contactEmail) {
         try {
@@ -23,6 +28,15 @@ public class ExternalClientApp {
             System.debug(LoggingLevel.ERROR, '[ExternalClientApp] External Client App Setup Failed: ' + e.getMessage());
 
             throw new AuraHandledException('Error during App Setup: ' + e.getMessage());
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<SObject> getExistingECA() {
+        try {
+            return [SELECT Id, ContactEmail FROM ExternalClientApplication WHERE DeveloperName = :APP_NAME LIMIT 1];
+        } catch (Exception e) {
+            throw new AuraHandledException('Error: ' + e.getMessage());
         }
     }
 
