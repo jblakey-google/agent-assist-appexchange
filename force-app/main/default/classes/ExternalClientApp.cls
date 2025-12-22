@@ -10,11 +10,6 @@ public class ExternalClientApp {
     */
     private static final String FULLY_QUALIFIED_APP_NAME = UserInfo.getOrganizationId() + ':' + APP_NAME;
 
-    public class ECAWrapper {
-        @AuraEnabled public String Id;
-        @AuraEnabled public String ContactEmail;
-    }
-
     @AuraEnabled
     public static void create(String contactEmail) {
         try {
