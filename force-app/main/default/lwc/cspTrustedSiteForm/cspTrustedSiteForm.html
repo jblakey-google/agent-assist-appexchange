@@ -1,24 +1,31 @@
 <template>
-    <lightning-card title="Create Trusted URLs" icon-name="standard:custom">
-        <div class="slds-p-around_medium">
+    <lightning-card title="Create Trusted URLs">
+        <template lwc:if={numberOfInactiveUrls}>
+            <div role="status" class="warning"><p><lightning-icon size="small" class="slds-m-right_x-small slds-icon-utility-warning slds-icon_container" icon-name="utility:warning" title="Warning"></lightning-icon>You have {numberOfInactiveUrls} inactive Trusted URLs that must be set to Active: {inactiveUrlNames}</p></div>
+        </template>
+        <div class="slds-p-around_medium grid">
             <p>Please create the following Trusted URLs to enable communication with external services for Agent Assist. You can manage these in <a href="/lightning/setup/SecurityCspTrustedSite/home" target="_blank">Trusted URLs</a>.</p>
-            
-            <ul>
-                <li><b>My Salesforce Domain:</b> https://YOUR_SALESFORCE_DOMAIN.my.salesforce.com</li>
-                <li><b>UI Connector (HTTPS):</b> https://YOUR_UI_CONNECTOR_CLOUD_RUN_URL</li>
-                <li><b>UI Connector (WebSocket):</b> wss://YOUR_UI_CONNECTOR_CLOUD_RUN_URL</li>
-            </ul>
-            
-            <lightning-input name="siteName" label="Site Name" value={siteName} onchange={handleNameChange} type="text" required placeholder="e.g. MySalesforceDomain"></lightning-input>
-            <lightning-input name="siteUrl" label="Site URL" value={siteUrl} onchange={handleUrlChange} type="url" required placeholder="e.g. https://YOUR_SALESFORCE_DOMAIN.my.salesforce.com"></lightning-input>
-            <div class="slds-m-top_medium">
-                <lightning-button label="Create Site" variant="brand" onclick={handleCreate} disabled={isLoading}></lightning-button>
-            </div>
-            <div if:true={isLoading} class="exampleHolder">
-                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+
+            <div class="fields">
+                <lightning-input name="ui_connector" label="UI Connector (https)" value={uiConnector} onchange={handleUrlChange} type="text" required placeholder="https://UI_CONNECTOR_SUBDOMAIN.us-central1.run.app" readonly={showReadonlyState}></lightning-input>
+                <lightning-input name="ui_connector_wss" label="UI Connector (wss)" value={uiConnectorWss} onchange={handleUrlChange} type="text" required placeholder="wss://UI_CONNECTOR_SUBDOMAIN.us-central1.run.app" readonly={showReadonlyState}></lightning-input>
             </div>
 
-            <p><b>Note:</b> The Trusted URL API Name can only contain underscores and alphanumeric characters. It must be unique, begin with a letter, not include spaces, not end with an underscore, and not contain two consecutive underscores.</p>
+            <lightning-checkbox-group name="twilio"
+                options={options}
+                value={provider}
+                disabled={showReadonlyState}
+                onchange={handleProviderCheckbox}>
+            </lightning-checkbox-group>
+
+            <template lwc:if={displayCreateBtn}>
+                <div class="slds-m-top_medium">
+                    <lightning-button label="Apply" variant="brand" onclick={handleCreate} disabled={isLoading}></lightning-button>
+                </div>
+            </template>
+            <div lwc:if={isLoading} class="exampleHolder">
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </div>
         </div>
     </lightning-card>
 </template>
