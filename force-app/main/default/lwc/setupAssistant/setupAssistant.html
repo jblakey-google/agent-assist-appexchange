@@ -31,11 +31,13 @@
                 <li><strong>User Access:</strong> Automatically assigns the permission set to <strong>you</strong>.</li>
             </ul>
 
+            <lightning-input label="Site Name" value={siteName} onchange={handleNameChange} required placeholder="e.g. GoogleApi"></lightning-input>
+
             <lightning-button 
                 variant="brand" 
                 label="Deploy Metadata Resources" 
                 onclick={handleDeploy}
-                disabled={isLoading}>
+                disabled={isDeployButtonDisabled}>
             </lightning-button>
 
             <template lwc:if={isLoading}>
