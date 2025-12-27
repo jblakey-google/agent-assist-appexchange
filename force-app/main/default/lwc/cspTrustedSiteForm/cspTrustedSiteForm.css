@@ -16,18 +16,6 @@
     background-color: var(--slds-c-alert-color-background, var(--slds-g-color-info-container-1));
 }
 
-.fields {
-    display: flex;
-    grid-gap: 1rem;
-    flex-direction: column;
-
-    @media(min-width: 768px) {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-gap: 1rem;
-    }
-}
-
 .grid {
     display: flex;
     flex-direction: column;

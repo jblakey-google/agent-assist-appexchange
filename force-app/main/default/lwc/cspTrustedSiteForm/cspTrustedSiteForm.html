@@ -3,29 +3,39 @@
         <template lwc:if={numberOfInactiveUrls}>
             <div role="status" class="warning"><p><lightning-icon size="small" class="slds-m-right_x-small slds-icon-utility-warning slds-icon_container" icon-name="utility:warning" title="Warning"></lightning-icon>You have {numberOfInactiveUrls} inactive Trusted URLs that must be set to Active: {inactiveUrlNames}</p></div>
         </template>
-        <div class="slds-p-around_medium grid">
-            <p>Please create the following Trusted URLs to enable communication with external services for Agent Assist. You can manage these in <a href="/lightning/setup/SecurityCspTrustedSite/home" target="_blank">Trusted URLs</a>.</p>
+        <form onsubmit={handleSubmit}>
+            <div class="slds-p-around_medium grid">
+                <p lwc:if={isDataTableVisible}>Trusted URLs are displayed in the table below. Each Trusted URL can be managed by clicking the URL in the "Settings URL" column.</p>
+                <p lwc:else>Below are Trusted URL fields. These fields grant the Agent Assist server permission to communicate with Salesforce. "UI Connector (wss)" is optional, but necessary if you're using a voice integration. These can be managed in <a href="/lightning/setup/SecurityCspTrustedSite/home" target="_blank">Trusted URL Settings</a>.</p>
 
-            <div class="fields">
-                <lightning-input name="ui_connector" label="UI Connector (https)" value={uiConnector} onchange={handleUrlChange} type="text" required placeholder="https://UI_CONNECTOR_SUBDOMAIN.us-central1.run.app" readonly={showReadonlyState}></lightning-input>
-                <lightning-input name="ui_connector_wss" label="UI Connector (wss)" value={uiConnectorWss} onchange={handleUrlChange} type="text" required placeholder="wss://UI_CONNECTOR_SUBDOMAIN.us-central1.run.app" readonly={showReadonlyState}></lightning-input>
-            </div>
+                <template lwc:if={isDataTableVisible}>
+                    <lightning-datatable hide-checkbox-column key-field="developerName" data={dataTableData} columns={datatableColumns}></lightning-datatable>
+                </template>
 
-            <lightning-checkbox-group name="twilio"
-                options={options}
-                value={provider}
-                disabled={showReadonlyState}
-                onchange={handleProviderCheckbox}>
-            </lightning-checkbox-group>
+                <template lwc:if={isUIConnectorFieldVisible}>
+                    <lightning-input name="ui_connector" label="UI Connector (https)" value={uiConnector} pattern="^https://[a-zA-Z0-9.\-]+[.]+[a-zA-Z]{2,}(/.*)?$" message-when-pattern-mismatch="Must be a valid wss URL. e.g. https://example.com" onchange={handleUrlChange} type="text" required placeholder="https://UI_CONNECTOR_SUBDOMAIN.us-central1.run.app"></lightning-input>
+                </template>
+    
+                 <template lwc:if={isUIConnectorWSFieldVisible}>
+                     <lightning-input name="ui_connector_wss" label="UI Connector (wss)" value={uiConnectorWss} pattern="^wss://[a-zA-Z0-9.\-]+[.]+[a-zA-Z]{2,}(/.*)?$" message-when-pattern-mismatch="Must be a valid wss URL. e.g. wss://example.com" onchange={handleUrlChange} type="text" placeholder="wss://UI_CONNECTOR_SUBDOMAIN.us-central1.run.app" field-level-help="This field is necessary when implementing a voice integration."></lightning-input>
+                 </template>
 
-            <template lwc:if={displayCreateBtn}>
+                 <template lwc:if={isTwilioFlexFieldVisible}>
+                    <lightning-checkbox-group name="voice"
+                        options={options}
+                        value={checkboxGroupValue}
+                        onchange={handleCheckbox}>
+                    </lightning-checkbox-group>
+                </template>
+
                 <div class="slds-m-top_medium">
-                    <lightning-button label="Apply" variant="brand" onclick={handleCreate} disabled={isLoading}></lightning-button>
+                    <lightning-button label="Apply" variant="brand" type="submit" disabled={isApplyBtnDisabled}></lightning-button>
                 </div>
-            </template>
-            <div lwc:if={isLoading} class="exampleHolder">
-                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+
+                <div lwc:if={isLoading} class="exampleHolder">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
             </div>
-        </div>
+        </form>
     </lightning-card>
 </template>

@@ -81,7 +81,7 @@ public class CspTrustedSiteCreator {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<SObject> getCSPs(String provider) {
+    public static List<SObject> getCSPs() {
         try {
             return [SELECT Id, DeveloperName, IsActive, EndpointUrl FROM CspTrustedSite WHERE DeveloperName IN ('ui_connector', 'ui_connector_wss', 'twilio_flex')];
         } catch(Exception err) {
