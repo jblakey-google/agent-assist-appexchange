@@ -143,10 +143,6 @@ public with sharing class SetupAssistantController {
                     '<met:enableSCVExternalTelephony>true</met:enableSCVExternalTelephony>' +
                     '<met:enableServiceCloudVoice>true</met:enableServiceCloudVoice>' +
                 '</met:metadata>' +
-                '<met:metadata xsi:type="met:MessagingSettings" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
-                    '<met:fullName>' + Config.MESSAGING_SETTINGS.get('NAME') + '</met:fullName>' +
-                    '<met:enableMessaging>true</met:enableMessaging>' +
-                '</met:metadata>' +
             '</met:updateMetadata>';
         sendMetadataRequest(body, sessionId);
     }

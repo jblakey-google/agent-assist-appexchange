@@ -3,18 +3,15 @@ public class MessageChannelSetup {
     @AuraEnabled
     public static void install() {
         try {
-            // 1. Handle the Queue (Steps 4)
-            Group queue = ensureQueueExists('Agent Assist', 'Agent_Assist');
+            Group queue = ensureQueueExists(Config.MESSAGING_QUEUE.get('LABEL'), Config.MESSAGING_QUEUE.get('NAME'));
             
-            // 2. Ensure Queue supports MessagingSession objects
             ensureQueueSupportsObject(queue.Id, 'MessagingSession');
 
-            // 3. Create the Messaging Channel (Steps 1-3, 5, 6)
-            createEnhancedChannel('Messaging Channel', queue.Id);
+            createEnhancedChannel(Config.MESSAGING_CHANNEL.get('LABEL'), queue.Id);
             
         } catch (Exception e) {
             System.debug('Installation Error: ' + e.getMessage());
-            throw e;
+            throw new AuraHandledException('There was an issue installing MessagingChannel.');
         }
     }
 
@@ -30,7 +27,9 @@ public class MessageChannelSetup {
             DeveloperName = developerName,
             Type = 'Queue'
         );
+
         insert newQueue;
+
         return newQueue;
     }
 
@@ -42,38 +41,39 @@ public class MessageChannelSetup {
                 QueueId = queueId,
                 SobjectType = objectType
             );
+
             insert qso;
         }
     }
 
     private static void createEnhancedChannel(String channelName, Id queueId) {
+        System.debug(LoggingLevel.DEBUG, '[createEnhancedChannel] Starting with channelName ' + channelName + ' and queueId ' + queueId);
+
         // Check if channel already exists to prevent duplicates
         List<MessagingChannel> existingChannels = [SELECT Id FROM MessagingChannel WHERE MasterLabel = :channelName LIMIT 1];
         if (!existingChannels.isEmpty()) {
+            System.debug(LoggingLevel.DEBUG, '[createEnhancedChannel] Channel already exists.');
             return; 
         }
 
+
         MessagingChannel channel = new MessagingChannel();
         channel.MasterLabel = channelName;
-        channel.DeveloperName = channelName.replaceAll('\\s+', '_'); // e.g., Messaging_Channel
+        channel.DeveloperName = channelName.replaceAll('\\s+', '_');
         
-        // "Enhanced Chat" corresponds to the 'EmbeddedMessaging' type
         channel.MessageType = 'EmbeddedMessaging';
         
-        // For EmbeddedMessaging, we generate a unique Platform Key (UUID)
-        // This mimics the backend provisioning that happens in the UI
-        channel.MessagingPlatformKey = UUID.randomUUID().toString();
+        channel.PlatformType = 'Enhanced';
         
-        // Routing Configuration (Step 4)
         channel.RoutingType = 'OmniQueue';
         channel.TargetQueueId = queueId; // Links to "Messaging Queue"
         
-        // Activation (Step 6)
         channel.IsActive = true; 
 
-        // Additional required fields for context
-        channel.Description = 'Created via Package Installer';
+        channel.Description = 'Messaging Channel for Agent Assist';
 
         insert channel;
+
+        System.debug(LoggingLevel.DEBUG, '[createEnhancedChannel] Channel created!');
     }
 }

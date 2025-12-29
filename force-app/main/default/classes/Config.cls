@@ -25,8 +25,9 @@ public class Config {
         'NAME' => 'ServiceCloudVoice'
     };
 
-    public static final Map<String, String> MESSAGING_SETTINGS = new Map<String, String>{
-        'NAME' => 'Messaging'
+    public static final Map<String, String> MESSAGING_CHANNEL = new Map<String, String>{
+        'LABEL' => 'GCP Messaging Channel',
+        'NAME' => 'GCP_Messaging_Channel'
     };
 
     public static final Map<String, String> SERVICE_PRESENCE = new Map<String, String>{

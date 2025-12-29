@@ -40,6 +40,11 @@ public class ResourceLinksGenerator {
                 getPermissionSetUrl(Config.SERVICE_PRESENCE.get('PERMISSION_SET_NAME')),
                 'PermissionSet',
                 Config.SERVICE_PRESENCE.get('PERMISSION_SET_NAME')
+            ),
+            new ResourceItem(
+                getMessagingChannelUrl(Config.MESSAGING_CHANNEL.get('NAME')),
+                'MessagingChannel',
+                Config.MESSAGING_CHANNEL.get('NAME')
             )
         };
     }
@@ -48,7 +53,7 @@ public class ResourceLinksGenerator {
         try {
             MessagingChannel channel = [SELECT Id FROM MessagingChannel WHERE DeveloperName = :developerName LIMIT 1];
             
-            return Url.getOrgDomainUrl().toExternalForm() + '/lightning/r/MessagingChannel/' + channel.Id + '/view';
+            return Url.getOrgDomainUrl().toExternalForm() + '/lightning/setup/LiveMessageSetup/' + channel.Id + '/view';
         } catch (Exception e) {
             return null;
         }
