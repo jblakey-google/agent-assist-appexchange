@@ -6,7 +6,8 @@
     "LiveMessage",
     "ServiceCloud",
     "LiveAgent",
-    "ServiceCloudVoicePartnerTelephony:1"
+    "ServiceCloudVoicePartnerTelephony:1",
+    "BYOOTT:1"
   ],
   "settings": {
     "lightningExperienceSettings": {
@@ -14,6 +15,12 @@
     },
     "omniChannelSettings": {
       "enableOmniChannel": true
+    },
+    "liveMessageSettings": {
+      "enableLiveMessage": true
+    },
+    "liveAgentSettings": {
+      "enableLiveAgent": true
     },
     "mobileSettings": {
       "enableS1EncryptedStoragePref2": false

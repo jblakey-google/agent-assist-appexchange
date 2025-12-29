@@ -83,6 +83,19 @@ private class SetupAssistantControllerTest {
                 Type = 'Queue'
             );
             insert existingQueue;
+            
+            insert new GroupMember(
+                GroupId = existingQueue.Id,
+                UserOrGroupId = UserInfo.getUserId()
+            );
+        }
+
+        PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'Agent_Assist_Messaging' LIMIT 1];
+        if ([SELECT Count() FROM PermissionSetAssignment WHERE AssigneeId = :UserInfo.getUserId() AND PermissionSetId = :ps.Id] == 0) {
+            insert new PermissionSetAssignment(
+                AssigneeId = UserInfo.getUserId(),
+                PermissionSetId = ps.Id
+            );
         }
 
         Test.startTest();
