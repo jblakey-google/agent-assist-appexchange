@@ -66,4 +66,26 @@ public class CspTrustedSiteCreator {
         String e = 'End_Of_Session_Id';
         return content.substringBetween(s, e);
     }
+
+    @AuraEnabled
+    public static void verifySalesforceDomainCSP() {
+        try {
+            Boolean isSfDomainEmpty = [SELECT Id FROM CspTrustedSite WHERE DeveloperName = 'salesforce_domain'].isEmpty();
+    
+            if(isSfDomainEmpty) {
+                createTrustedSite(String.valueOf(URL.getOrgDomainUrl()), 'salesforce_domain');
+            }
+        } catch(Exception err) {
+            System.debug(LoggingLevel.ERROR, 'HTTP Request failed: ' + err.getMessage());
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<SObject> getCSPs() {
+        try {
+            return [SELECT Id, DeveloperName, IsActive, EndpointUrl FROM CspTrustedSite WHERE DeveloperName IN ('ui_connector', 'ui_connector_wss', 'twilio_flex')];
+        } catch(Exception err) {
+            throw new AuraHandledException('[CspTrustedSiteCreator.getCSPs] ' + err.getMessage());
+        }
+    }
 }
