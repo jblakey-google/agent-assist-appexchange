@@ -25,6 +25,10 @@ public class Config {
         'NAME' => 'ServiceCloudVoice'
     };
 
+    public static final Map<String, String> MESSAGING_SETTINGS = new Map<String, String>{
+        'NAME' => 'Messaging'
+    };
+
     public static final Map<String, String> SERVICE_PRESENCE = new Map<String, String>{
         'PERMISSION_SET_LABEL' => 'Agent Assist Messaging',
         'PERMISSION_SET_NAME' => 'Agent_Assist_Messaging',
