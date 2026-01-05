@@ -8,17 +8,23 @@ import createExternalClientApp from '@salesforce/apex/ExternalClientApp.create';
 import getExistingECA from '@salesforce/apex/ExternalClientApp.getExistingECA';
 // @ts-expect-error This is an old deprecated implementation.
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+// @ts-expect-error This function does exist: https://developer.salesforce.com/docs/platform/lwc/guide/apex-result-caching.html
+import { refreshApex } from "@salesforce/apex";
 
 export default class ExternalClientAppForm extends LightningElement {
     /**
      * @description Retrieves the ECA's record via Apex DML.
      */
     @wire(getExistingECA)
-    wiredResources({ error, data }) {
+    wiredResources(params) {
+        this.__wiredResult = params;
+
+        const {data, error} = params;
+
         if (error) {
             console.error('Error checking if external client app exists:', error);  
         }
-        console.log(data)
+
         /**
          * @type {{
          *  Id: string;
@@ -35,6 +41,8 @@ export default class ExternalClientAppForm extends LightningElement {
             this.ecaId = eca.Id
         }
     }
+
+    __wiredResult = null;
     /**
      * @type {string}
      * 
@@ -90,6 +98,8 @@ export default class ExternalClientAppForm extends LightningElement {
             await createExternalClientApp({ contactEmail: this.contactEmail })
 
             this.showToast('Success', 'External Client App created successfully', 'success');
+            
+            await refreshApex(this.__wiredResult)
         
             this.contactEmail = '';
         } catch(error) {
