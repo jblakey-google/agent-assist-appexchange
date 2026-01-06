@@ -39,6 +39,7 @@
                         Upon clicking the Deploy Metadata Resources button, the setup assistant has automatically configured the core infrastructure required for GCP Agent Assist. You are now viewing a summary of the successfully Deployed resources, which includes the necessary Service Channels, Routing Configurations, and Permission Sets required to handle messaging and voice traffic. Each entry includes a direct link to the specific resource within your Salesforce setup, allowing you to verify configurations or make manual adjustments as needed.
                     </p>
                     <lightning-datatable
+                        hide-checkbox-column
                         key-field="name"
                         data={tableData}
                         columns={tableCols}>

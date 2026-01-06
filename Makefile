@@ -61,8 +61,17 @@ apex-run: ## Run Apex code in scratch org in interactive mode
 apex-run-file: ## Run Apex code in scratch org from file
 	sf apex run --file scripts/apex/hello.apex --loglevel debug | grep 'USER_'
 
-apex-list-log: ## List debug logs in scratch org in json format
+apex-list-log: ## List debug logs in scratch org in json format (these will be empty until you set a "trace flag" by running sf apex tail log)
 	sf apex list log --json
+
+apex-tail-log: ## Tail debug logs in scratch org in json format (sets 30 min trace flag)
+	sf apex tail log --json
+
+view-all-logs: ## Grabs the last 25 logs (the max), stores them in /tmp/sf_logs, and displays them all
+	@rm -rf /tmp/sf_logs
+	@mkdir -p /tmp/sf_logs
+	@sf apex get log --output-dir /tmp/sf_logs -n 25
+	@cat /tmp/sf_logs/*.log | less
 
 apex-run-test: ## Run Apex tests in scratch org
 	sf apex run test --wait 1
