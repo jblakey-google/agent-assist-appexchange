@@ -16,8 +16,10 @@ public with sharing class SetupAssistantController {
             deployQueueRoutingConfig(sessionId);
             deployServiceChannel(sessionId); 
             
-            // 3. Create Statuses & Perm Set (But don't assign yet)
+            // 3. Create Statuses & Update Permission Set (Hybrid Approach)
+            // Create Statuses via Metadata API
             deployServicePresenceStatus(sessionId); 
+            // Update Permissions (User Perms) via Metadata API (Statuses handled via Apex below to avoid race condition)
             deployPresencePermissionSet(sessionId); 
             
             // --- PHASE 2: DML (Database Operations) ---
@@ -29,40 +31,13 @@ public with sharing class SetupAssistantController {
             // 5. Link the Queue to the Routing Config
             linkQueueToConfig();
 
-            // 6. Assign the Permission Set to the Current User (The Final Step)
-            assignPermissionSetToCurrentUser(userId);
+            // 6. Link Statuses (Apex - handles propagation delay)
+            linkStatusesToPermissionSet();
             
             return 'Success';
         } catch (Exception e) {
             System.debug('Setup Failed: ' + e.getMessage() + '\n' + e.getStackTraceString());
             throw new AuraHandledException('Error: ' + e.getMessage());
-        }
-    }
-
-    // --- NEW: Auto-Assign the Perm Set ---
-    private static void assignPermissionSetToCurrentUser(String currentUserId) {
-        try {
-            String name = Config.SERVICE_PRESENCE.get('PERMISSION_SET_NAME');
-
-            // 1. Find the Perm Set we just created
-            List<PermissionSet> ps = [SELECT Id FROM PermissionSet WHERE Name = :name LIMIT 1];
-            if (ps.isEmpty()) return;
-            
-            // 2. Check if already assigned
-            List<PermissionSetAssignment> existing = [
-                SELECT Id FROM PermissionSetAssignment 
-                WHERE AssigneeId = :currentUserId AND PermissionSetId = :ps[0].Id
-            ];
-            
-            // 3. Assign if missing
-            if (existing.isEmpty()) {
-                PermissionSetAssignment psa = new PermissionSetAssignment();
-                psa.AssigneeId = currentUserId;
-                psa.PermissionSetId = ps[0].Id;
-                insert psa;
-            }
-        } catch (Exception e) {
-            System.debug('Failed to assign permission set: ' + e.getMessage());
         }
     }
 
@@ -171,6 +146,59 @@ public with sharing class SetupAssistantController {
         }
     }
 
+    private static void deployPresencePermissionSet(String sessionId) {
+        String accessXml = '';
+        String permSetBody = '<met:upsertMetadata xmlns:met="http://soap.sforce.com/2006/04/metadata"><met:metadata xsi:type="met:PermissionSet" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><met:fullName>' + Config.SERVICE_PRESENCE.get('PERMISSION_SET_NAME') + '</met:fullName><met:label>' + Config.SERVICE_PRESENCE.get('PERMISSION_SET_LABEL') + '</met:label><met:hasActivationRequired>false</met:hasActivationRequired>' + accessXml + '</met:metadata></met:upsertMetadata>';
+        sendMetadataRequest(permSetBody, sessionId); 
+    }
+
+    private static void linkStatusesToPermissionSet() {
+        try {
+            String psName = Config.SERVICE_PRESENCE.get('PERMISSION_SET_NAME');
+            List<PermissionSet> psList = [SELECT Id FROM PermissionSet WHERE Name = :psName LIMIT 1];
+            if (psList.isEmpty()) return;
+
+            Set<String> statusNames = new Set<String>{'Busy', 'Online_Messaging'};
+            // Retry loop to handle metadata propagation delays
+            List<SObject> statuses = new List<SObject>();
+            for (Integer i = 0; i < 3; i++) {
+                try {
+                     statuses = Database.query('SELECT Id, DeveloperName FROM ServicePresenceStatus WHERE DeveloperName IN :statusNames');
+                     if (!statuses.isEmpty()) break;
+                     // Simple delay
+                     Long start = System.currentTimeMillis();
+                     while(System.currentTimeMillis() < start + 500) {}
+                } catch (Exception e) {
+                    System.debug('Status Query Attempt ' + (i+1) + ' failed: ' + e.getMessage());
+                }
+            }
+
+            if (!statuses.isEmpty()) {
+                 List<SetupEntityAccess> newLinks = new List<SetupEntityAccess>();
+                 Set<Id> existing = new Set<Id>();
+
+                 for (SetupEntityAccess sea : [SELECT SetupEntityId FROM SetupEntityAccess WHERE ParentId = :psList[0].Id AND SetupEntityId IN :new Map<Id,SObject>(statuses).keySet()]) {
+                     existing.add(sea.SetupEntityId);
+                 }
+
+                 for (SObject s : statuses) {
+                     if (!existing.contains((Id)s.get('Id'))) {
+                         newLinks.add(new SetupEntityAccess(
+                             ParentId = psList[0].Id,
+                             SetupEntityId = (Id)s.get('Id')
+                         ));
+                     }
+                 }
+
+                 if (!newLinks.isEmpty()) {
+                     insert newLinks;
+                 }
+            }
+        } catch (Exception e) {
+            System.debug('LinkStatusesToPermissionSet Failed: ' + e.getMessage());
+        }
+    }
+
     private static void deployServicePresenceStatus(String sessionId) {
         if ([SELECT Count() FROM ServicePresenceStatus WHERE DeveloperName = 'Busy'] == 0) {
             String busyBody = '<met:createMetadata xmlns:met="http://soap.sforce.com/2006/04/metadata"><met:metadata xsi:type="met:ServicePresenceStatus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><met:fullName>' + Config.SERVICE_PRESENCE.get('STATUS_BUSY_NAME') + '</met:fullName><met:label>' + Config.SERVICE_PRESENCE.get('STATUS_BUSY_LABEL') + '</met:label></met:metadata></met:createMetadata>';
@@ -205,15 +233,6 @@ public with sharing class SetupAssistantController {
                 }
             }
         } catch (Exception e) { System.debug('Failed to link Queue: ' + e.getMessage()); }
-    }
-
-    private static void deployPresencePermissionSet(String sessionId) {
-        String accessXml = '';
-        for (String statusName : new List<String>{'Busy', 'Online_Messaging'}) {
-            accessXml += '<met:servicePresenceStatusAccesses><met:enabled>true</met:enabled><met:servicePresenceStatus>' + statusName + '</met:servicePresenceStatus></met:servicePresenceStatusAccesses>';
-        }
-        String permSetBody = '<met:upsertMetadata xmlns:met="http://soap.sforce.com/2006/04/metadata"><met:metadata xsi:type="met:PermissionSet" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><met:fullName>' + Config.SERVICE_PRESENCE.get('PERMISSION_SET_NAME') + '</met:fullName><met:label>' + Config.SERVICE_PRESENCE.get('PERMISSION_SET_LABEL') + '</met:label><met:hasActivationRequired>false</met:hasActivationRequired>' + accessXml + '</met:metadata></met:upsertMetadata>';
-        sendMetadataRequest(permSetBody, sessionId); 
     }
 
     private static String getSessionIdFromVF() {

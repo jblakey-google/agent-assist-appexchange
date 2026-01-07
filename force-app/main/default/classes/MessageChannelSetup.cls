@@ -17,9 +17,14 @@ public class MessageChannelSetup {
 
     private static Group ensureQueueExists(String label, String developerName) {
         List<Group> groups = [SELECT Id FROM Group WHERE DeveloperName = :developerName AND Type = 'Queue' LIMIT 1];
+
+        System.debug(LoggingLevel.DEBUG, '[ensureQueueExists] groups: ' + groups);
         
         if (!groups.isEmpty()) {
+            System.debug(LoggingLevel.DEBUG, '[ensureQueueExists] queue already exists.');
             return groups[0];
+        } else {
+            System.debug(LoggingLevel.DEBUG, '[ensureQueueExists] queue does not exist.');
         }
 
         Group newQueue = new Group(
@@ -35,14 +40,18 @@ public class MessageChannelSetup {
 
     private static void ensureQueueSupportsObject(Id queueId, String objectType) {
         List<QueueSobject> qsos = [SELECT Id FROM QueueSobject WHERE QueueId = :queueId AND SobjectType = :objectType LIMIT 1];
+        System.debug(LoggingLevel.DEBUG, '[ensureQueueSupportsObject] qsos: ' + qsos);
         
         if (qsos.isEmpty()) {
             QueueSobject qso = new QueueSobject(
                 QueueId = queueId,
                 SobjectType = objectType
             );
+            System.debug(LoggingLevel.DEBUG, '[ensureQueueSupportsObject] new qso: ' + qso);
 
             insert qso;
+        } else {
+            System.debug(LoggingLevel.DEBUG, '[ensureQueueSupportsObject] qso already exists.');
         }
     }
 

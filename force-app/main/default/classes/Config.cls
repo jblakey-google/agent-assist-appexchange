@@ -16,6 +16,10 @@ public class Config {
         'NAME' => 'LiveMessage'
     };
 
+    public static final Map<String, String> MESSAGING_SETTINGS = new Map<String, String>{
+        'NAME' => 'Messaging'
+    };
+
     public static final Map<String, String> ROUTING_QUEUE_CONFIG = new Map<String, String>{
         'NAME' => 'Agent_Assist',
         'LABEL' => 'Agent Assist'
