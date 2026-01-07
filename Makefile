@@ -29,7 +29,7 @@ deploy-preview: ## Deploy source to default org in preview mode
 	sf project deploy preview
 
 deploy-start: ## Deploy source to default org in start mode
-	sf project deploy start
+	sf project deploy start && sf apex run -f scripts/apex/runPostInstallLogic.apex
 
 retrieve-preview: ## Retrieve source from default org in preview mode
 	sf project retrieve preview
