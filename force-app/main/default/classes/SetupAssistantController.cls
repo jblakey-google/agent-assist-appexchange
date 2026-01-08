@@ -5,7 +5,7 @@ public with sharing class SetupAssistantController {
         try {
             String sessionId = getSessionIdFromVF();
             String userId = UserInfo.getUserId();
-            
+
             // --- PHASE 1: Callouts (Metadata API) ---
             // Must happen BEFORE any DML to avoid "Uncommitted Work" errors
             
@@ -13,8 +13,8 @@ public with sharing class SetupAssistantController {
             deploySettings(sessionId); 
             
             // 2. Create Routing Config & Channels
-            deployQueueRoutingConfig(sessionId);
             deployServiceChannel(sessionId); 
+            deployQueueRoutingConfig(sessionId);
             
             // 3. Create Statuses & Perm Set (But don't assign yet)
             deployServicePresenceStatus(sessionId); 
@@ -172,8 +172,10 @@ public with sharing class SetupAssistantController {
     }
 
     private static void deployServicePresenceStatus(String sessionId) {
-        if ([SELECT Count() FROM ServicePresenceStatus WHERE DeveloperName = 'Busy'] == 0) {
-            String busyBody = '<met:createMetadata xmlns:met="http://soap.sforce.com/2006/04/metadata"><met:metadata xsi:type="met:ServicePresenceStatus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><met:fullName>' + Config.SERVICE_PRESENCE.get('STATUS_BUSY_NAME') + '</met:fullName><met:label>' + Config.SERVICE_PRESENCE.get('STATUS_BUSY_LABEL') + '</met:label></met:metadata></met:createMetadata>';
+        String busyDevName = Config.SERVICE_PRESENCE.get('STATUS_BUSY_NAME');
+
+        if ([SELECT Count() FROM ServicePresenceStatus WHERE DeveloperName = :busyDevName] == 0) {
+            String busyBody = '<met:createMetadata xmlns:met="http://soap.sforce.com/2006/04/metadata"><met:metadata xsi:type="met:ServicePresenceStatus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><met:fullName>' + Config.SERVICE_PRESENCE.get('STATUS_BUSY_NAME') + '</met:fullName><met:label>' + busyDevName + '</met:label></met:metadata></met:createMetadata>';
             sendMetadataRequest(busyBody, sessionId);
         }
         if ([SELECT Count() FROM ServicePresenceStatus WHERE DeveloperName = 'Online_Messaging'] == 0) {
@@ -187,16 +189,20 @@ public with sharing class SetupAssistantController {
     }
 
     private static void deployQueueRoutingConfig(String sessionId) {
-        if ([SELECT Count() FROM QueueRoutingConfig WHERE DeveloperName = 'Agent_Assist'] > 0) return;
+        String rcDevName = Config.ROUTING_QUEUE_CONFIG.get('NAME');
+
+        if ([SELECT Count() FROM QueueRoutingConfig WHERE DeveloperName = :rcDevName] > 0) return;
         String soapBody = '<met:createMetadata xmlns:met="http://soap.sforce.com/2006/04/metadata"><met:metadata xsi:type="met:QueueRoutingConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><met:fullName>' + Config.ROUTING_QUEUE_CONFIG.get('NAME') + '</met:fullName><met:label>' + Config.ROUTING_QUEUE_CONFIG.get('LABEL') + '</met:label><met:capacityPercentage>25</met:capacityPercentage><met:capacityType>INHERITED</met:capacityType><met:isAttributeBased>false</met:isAttributeBased><met:routingModel>LEAST_ACTIVE</met:routingModel><met:routingPriority>1</met:routingPriority></met:metadata></met:createMetadata>';
         sendMetadataRequest(soapBody, sessionId);
     }
 
     private static void linkQueueToConfig() {
         try {
-            List<QueueRoutingConfig> qrcs = [SELECT Id FROM QueueRoutingConfig WHERE DeveloperName = 'Agent_Assist' LIMIT 1];
+            String rcDevName = Config.ROUTING_QUEUE_CONFIG.get('NAME');
+
+            List<QueueRoutingConfig> qrcs = [SELECT Id FROM QueueRoutingConfig WHERE DeveloperName = :rcDevName LIMIT 1];
             if (qrcs.isEmpty()) return;
-            List<Group> queues = [SELECT Id, QueueRoutingConfigId FROM Group WHERE Type = 'Queue' AND DeveloperName = 'Agent_Assist' LIMIT 1];
+            List<Group> queues = [SELECT Id, QueueRoutingConfigId FROM Group WHERE Type = 'Queue' AND DeveloperName = :rcDevName LIMIT 1];
             if (!queues.isEmpty()) {
                 Group g = queues[0];
                 if (g.QueueRoutingConfigId != qrcs[0].Id) {

@@ -21,3 +21,19 @@
     flex-direction: column;
     grid-gap: 1rem;
 }
+
+.icon--success  {
+    --slds-s-icon-color-foreground: var(--slds-g-color-on-success-1);
+    --slds-c-icon-color-foreground: var(--slds-g-color-on-success-1);
+}
+
+
+.icon--error {
+    --slds-s-icon-color-foreground: var(--slds-g-color-on-error-1);
+    --slds-c-icon-color-foreground: var(--slds-g-color-on-error-1);
+}
+
+.msg-title {
+    display: flex;
+    gap: 0.75rem;
+}

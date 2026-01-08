@@ -1,4 +1,4 @@
-public class MessageChannelSetup {
+public class MessageChannelController {
 
     @AuraEnabled
     public static void install() {
@@ -65,8 +65,14 @@ public class MessageChannelSetup {
         
         channel.PlatformType = 'Enhanced';
         
+        /*
+        Keeping this here as a reminder -- I attempted to set these two values programmatically with this and also via REST,
+        but neither worked. For the time being, users will have to manually attach the queue to the channel via the UI.
+        
         channel.RoutingType = 'OmniQueue';
-        channel.TargetQueueId = queueId; // Links to "Messaging Queue"
+
+        channel.TargetQueueId = queueId;
+        */
         
         channel.IsActive = true; 
 
@@ -75,5 +81,51 @@ public class MessageChannelSetup {
         insert channel;
 
         System.debug(LoggingLevel.DEBUG, '[createEnhancedChannel] Channel created!');
+    }
+
+    public class MessagingChannelWithUrl {
+        @AuraEnabled
+        public String name;
+        @AuraEnabled
+        public Id id;
+        @AuraEnabled
+        public String routingType;
+        @AuraEnabled
+        public String url;
+        @AuraEnabled
+        public Id targetQueueId;
+
+        public MessagingChannelWithUrl(String name, Id id, String routingType, String url, Id targetQueueId) {
+            this.name = name;
+            this.id = id;
+            this.routingType = routingType;
+            this.url = url;
+            this.targetQueueId = targetQueueId;
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static MessagingChannelWithUrl getAgentAssistMessageChannel() {
+        System.debug(LoggingLevel.DEBUG, '[getAgentAssistMessageChannel] Retrieving MessagingChannel via SOQL.');
+
+        List<MessagingChannel> channels = [SELECT Id, RoutingType, TargetQueueId FROM MessagingChannel WHERE MasterLabel = :Config.MESSAGING_CHANNEL.get('LABEL') LIMIT 1];
+
+        if(channels.isEmpty()) {
+            System.debug(LoggingLevel.DEBUG, '[getAgentAssistMessageChannel] SOQL query returned empty.');
+
+            return null;
+        }
+
+        MessagingChannel channel = channels[0];
+
+        System.debug(LoggingLevel.DEBUG, '[getAgentAssistMessageChannel] Retrieved channel' + '\n Routing Type:' + channel.RoutingType + '\n Queue ID: ' + channel.TargetQueueId);
+
+        return new MessagingChannelWithUrl(
+            Config.MESSAGING_CHANNEL.get('LABEL'),
+            channel.Id,
+            channel.RoutingType,
+            ResourceLinksGenerator.getMessagingChannelUrl(Config.MESSAGING_CHANNEL.get('NAME')),
+            channel.TargetQueueId
+        );
     }
 }

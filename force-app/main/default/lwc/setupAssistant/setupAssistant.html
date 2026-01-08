@@ -1,15 +1,20 @@
 <template>
-    <lightning-card title="Agent Assist Setup Assistant" icon-name="standard:custom">
-        <div class="slds-p-around_medium">
-            <template lwc:if={isSuccess}>
-                <div class="slds-notify slds-notify_alert slds-theme_success" role="alert">
-                    <span class="slds-assistive-text">success</span>
-                    <h2>Setup Complete! You are now ready to receive messages.</h2>
-                </div>
-            </template>
-
+    <lightning-card>
+        <h3 class="msg-title" slot="title">
             <template lwc:if={error}>
-                <div class="slds-notify slds-notify_alert slds-theme_error" role="alert">
+                <lightning-icon class="icon--error" icon-name="utility:error" size="small"></lightning-icon>
+            </template>
+            <template lwc:elseif={isSuccess}>
+                <lightning-icon class="icon--success" icon-name="utility:success" size="small"></lightning-icon>
+            </template>
+            <template lwc:else>
+                <lightning-icon icon-name="standard:custom" size="small"></lightning-icon>
+            </template>
+            Agent Assist Setup Assistant
+        </h3>
+        <div class="slds-p-around_medium">
+            <template lwc:if={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_error slds-m-bottom_medium" role="alert">
                     <span class="slds-assistive-text">error</span>
                     <h2>{error}</h2>
                 </div>
@@ -39,6 +44,7 @@
                         Upon clicking the Deploy Metadata Resources button, the setup assistant has automatically configured the core infrastructure required for GCP Agent Assist. You are now viewing a summary of the successfully Deployed resources, which includes the necessary Service Channels, Routing Configurations, and Permission Sets required to handle messaging and voice traffic. Each entry includes a direct link to the specific resource within your Salesforce setup, allowing you to verify configurations or make manual adjustments as needed.
                     </p>
                     <lightning-datatable
+                        hide-checkbox-column
                         key-field="name"
                         data={tableData}
                         columns={tableCols}>

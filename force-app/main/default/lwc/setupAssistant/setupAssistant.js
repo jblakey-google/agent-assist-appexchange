@@ -3,7 +3,6 @@
 import { LightningElement, track, wire } from 'lwc';
 import deployMetadata from '@salesforce/apex/SetupAssistantController.deployMetadata';
 import getResourceUrls from '@salesforce/apex/ResourceLinksGenerator.getResourceUrls';
-import installMessageChannel from '@salesforce/apex/MessageChannelSetup.install';
 // @ts-expect-error This function does exist: https://developer.salesforce.com/docs/platform/lwc/guide/apex-result-caching.html
 import { refreshApex } from "@salesforce/apex";
 
@@ -57,7 +56,7 @@ export default class SetupAssistant extends LightningElement {
     wiredResources(params) {
         this.__wiredResult = params
 
-        const {error, data} = params
+        const { error, data } = params
         /**
          * @type {ResourceItems}
          */
@@ -69,6 +68,8 @@ export default class SetupAssistant extends LightningElement {
                 ...resource,
                 status: resource.url ? 'Deployed' : 'Not Deployed',
             }));
+
+            this.isSuccess = true
 
             this.error = undefined;
         } else if (error) {
@@ -89,13 +90,11 @@ export default class SetupAssistant extends LightningElement {
         try {
             await deployMetadata()
 
-            await installMessageChannel()
-
             this.isSuccess = true;
 
             await refreshApex(this.__wiredResult)
         } catch(error) {
-                this.error = error.body ? error.body.message : error.message;
+            this.error = error.body ? error.body.message : error.message;
         } finally {
             this.isLoading = false;
         }

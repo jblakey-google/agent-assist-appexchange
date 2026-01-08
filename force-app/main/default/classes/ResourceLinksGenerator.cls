@@ -40,11 +40,6 @@ public class ResourceLinksGenerator {
                 getPermissionSetUrl(Config.SERVICE_PRESENCE.get('PERMISSION_SET_NAME')),
                 'PermissionSet',
                 Config.SERVICE_PRESENCE.get('PERMISSION_SET_NAME')
-            ),
-            new ResourceItem(
-                getMessagingChannelUrl(Config.MESSAGING_CHANNEL.get('NAME')),
-                'MessagingChannel',
-                Config.MESSAGING_CHANNEL.get('NAME')
             )
         };
     }
