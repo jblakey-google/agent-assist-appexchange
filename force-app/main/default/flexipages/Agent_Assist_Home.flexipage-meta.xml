@@ -19,6 +19,12 @@
                 <identifier>c_cspTrustedSiteForm</identifier>
             </componentInstance>
         </itemInstances>
+                <itemInstances>
+            <componentInstance>
+                <componentName>externalClientAppForm</componentName>
+                <identifier>c_externalClientAppForm</identifier>
+            </componentInstance>
+        </itemInstances>
         <mode>Replace</mode>
         <name>top</name>
         <type>Region</type>

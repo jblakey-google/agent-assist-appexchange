@@ -1,0 +1,32 @@
+<template>
+    <lightning-card title="External Client App (OAuth)" icon-name="standard:invst_profile">
+        <div class="slds-p-around_large">
+            <template if:false={doesExternalAppExist}>
+                <lightning-input label="Contact email" value={contactEmail} onchange={handleEmailChange} name="email" required></lightning-input>
+                <div class="slds-m-top_medium">
+                    <lightning-button label="Create External Client App" variant="brand" onclick={handleCreate} disabled={isLoading}></lightning-button>
+                </div>
+                <div if:true={isLoading} class="exampleHolder">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>
+            <template if:true={doesExternalAppExist}> 
+                <lightning-input label="Contact email" value={contactEmail} onchange={handleEmailChange} name="email" readonly></lightning-input>
+                <p class="slds-p-bottom_medium">To complete setup, follow these instructions. If you've already completed it, you can ignore this message.</p>
+                    <ul class="slds-list_ordered slds-p-bottom_medium">
+                        <li>
+                        Click the "View External Client App" button below
+                        </li>
+                        <li>Click the "Settings" tab</li>
+                        <li>
+                            Expand the OAuth Settings section
+                        </li>
+                        <li>
+                            Check the "Enable OAuth" box
+                        </li>
+                    </ul>
+                    <lightning-button label="View External Client App" variant="brand" onclick={handleNavigateToEcaSettings}></lightning-button>
+            </template>
+        </div>
+    </lightning-card>
+</template>
