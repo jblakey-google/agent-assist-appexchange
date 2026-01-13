@@ -9,6 +9,12 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
+                <componentName>messageChannel</componentName>
+                <identifier>c_messageChannel</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentName>cspTrustedSiteForm</componentName>
                 <identifier>c_cspTrustedSiteForm</identifier>
             </componentInstance>

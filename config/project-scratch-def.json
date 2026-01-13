@@ -2,6 +2,7 @@
   "orgName": "Google",
   "edition": "Enterprise",
   "features": [
+    "Communities",
     "EnableSetPasswordInApi",
     "LiveMessage",
     "ServiceCloud",
@@ -11,6 +12,12 @@
     "EmbeddedServiceMessaging"
   ],
   "settings": {
+    "communitiesSettings": {
+      "enableNetworksEnabled": true
+    },
+    "experienceBundleSettings": {
+      "enableExperienceBundleMetadata": true
+    },
     "lightningExperienceSettings": {
       "enableS1DesktopEnabled": true
     },

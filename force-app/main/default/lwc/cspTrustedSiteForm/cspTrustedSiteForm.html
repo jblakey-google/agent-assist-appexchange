@@ -1,5 +1,14 @@
 <template>
-    <lightning-card title="Create Trusted URLs">
+    <lightning-card>
+        <h3 class="msg-title" slot="title">
+            <template lwc:if={isDataTableVisible}>
+                <lightning-icon class="icon--success" icon-name="utility:success" size="small"></lightning-icon>
+            </template>
+            <template lwc:else>
+                <lightning-icon icon-name="standard:custom" size="small"></lightning-icon>
+            </template>
+            Create Trusted URLs
+        </h3>
         <template lwc:if={numberOfInactiveUrls}>
             <div role="status" class="warning"><p><lightning-icon size="small" class="slds-m-right_x-small slds-icon-utility-warning slds-icon_container" icon-name="utility:warning" title="Warning"></lightning-icon>You have {numberOfInactiveUrls} inactive Trusted URLs that must be set to Active: {inactiveUrlNames}</p></div>
         </template>

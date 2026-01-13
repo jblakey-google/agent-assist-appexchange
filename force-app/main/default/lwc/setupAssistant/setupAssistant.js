@@ -3,6 +3,8 @@
 import { LightningElement, track, wire } from 'lwc';
 import deployMetadata from '@salesforce/apex/SetupAssistantController.deployMetadata';
 import getResourceUrls from '@salesforce/apex/ResourceLinksGenerator.getResourceUrls';
+// @ts-expect-error This function does exist: https://developer.salesforce.com/docs/platform/lwc/guide/apex-result-caching.html
+import { refreshApex } from "@salesforce/apex";
 
 /**    
  * @typedef {{
@@ -30,6 +32,8 @@ export default class SetupAssistant extends LightningElement {
     @track isSuccess = false;
     @track error;
 
+    __wiredResult;
+
     /**
      * Resource information to display in the lightning table.
      * 
@@ -49,7 +53,10 @@ export default class SetupAssistant extends LightningElement {
     areAllResourcesDeployed = false;
 
     @wire(getResourceUrls)
-    wiredResources({ error, data }) {
+    wiredResources(params) {
+        this.__wiredResult = params
+
+        const { error, data } = params
         /**
          * @type {ResourceItems}
          */
@@ -62,6 +69,8 @@ export default class SetupAssistant extends LightningElement {
                 status: resource.url ? 'Deployed' : 'Not Deployed',
             }));
 
+            this.isSuccess = true
+
             this.error = undefined;
         } else if (error) {
             console.error(error);
@@ -73,20 +82,21 @@ export default class SetupAssistant extends LightningElement {
         return !this.areAllResourcesDeployed;
     }
 
-    handleDeploy() {
+    async handleDeploy() {
         this.isLoading = true;
         this.error = null;
         this.isSuccess = false;
 
-        deployMetadata()
-            .then(() => {
-                this.isSuccess = true;
-            })
-            .catch(error => {
-                this.error = error.body ? error.body.message : error.message;
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
+        try {
+            await deployMetadata()
+
+            this.isSuccess = true;
+
+            await refreshApex(this.__wiredResult)
+        } catch(error) {
+            this.error = error.body ? error.body.message : error.message;
+        } finally {
+            this.isLoading = false;
+        }
     }
 }

@@ -48,7 +48,7 @@ public class ResourceLinksGenerator {
         try {
             MessagingChannel channel = [SELECT Id FROM MessagingChannel WHERE DeveloperName = :developerName LIMIT 1];
             
-            return Url.getOrgDomainUrl().toExternalForm() + '/lightning/r/MessagingChannel/' + channel.Id + '/view';
+            return Url.getOrgDomainUrl().toExternalForm() + '/lightning/setup/LiveMessageSetup/' + channel.Id + '/view';
         } catch (Exception e) {
             return null;
         }

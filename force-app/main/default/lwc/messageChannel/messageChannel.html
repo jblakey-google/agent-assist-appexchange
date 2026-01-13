@@ -1,0 +1,59 @@
+<template>
+    <lightning-card>
+        <h3 class="msg-title" slot="title">
+            <template lwc:if={error}>
+                <lightning-icon class="icon--error" icon-name="utility:error" size="small"></lightning-icon>
+            </template>
+            <template lwc:elseif={isSuccess}>
+                <lightning-icon class="icon--success" icon-name="utility:success" size="small"></lightning-icon>
+            </template>
+            <template lwc:else>
+                <lightning-icon icon-name="standard:custom" size="small"></lightning-icon>
+            </template>
+            Messaging Channel Setup
+        </h3>
+        <div class="slds-p-around_medium">
+            <template lwc:if={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_error slds-m-bottom_medium" role="alert">
+                    <span class="slds-assistive-text">error</span>
+                    <h2>{error}</h2>
+                </div>
+            </template>
+
+            <p class="slds-m-bottom_small">
+                After clicking the "Install" button, you'll need to complete the following steps:
+            </p>
+            <ol class="slds-list_ordered slds-m-bottom_medium">
+                <li><a href={channelUrl} target="_blank">Click here</a> or the link below to navigate to the Messaging Channel's settings page.</li>
+                <li>In the Messaging Channel's settings, locate "Omni-Channel Routing", and click "Edit".</li>
+                <li>Update "Routing Type" to "Omni-Queue".</li>
+                <li>Update "Queue" to "Agent Assist".</li>
+            </ol>
+            <p class="slds-m-bottom_small"></p>
+            <template lwc:if={tableData}>
+                <div class="slds-m-bottom_medium">
+                    <lightning-datatable
+                        hide-checkbox-column
+                        key-field="name"
+                        data={tableData}
+                        columns={tableCols}>
+                    </lightning-datatable>
+                </div>
+            </template>
+            
+            <template lwc:if={shouldDisplayInstallBtn}>
+                <lightning-button 
+                    variant="brand" 
+                    label="Install" 
+                    onclick={handleDeploy}
+                    disabled={isLoading}>
+                </lightning-button>
+            </template>
+
+
+            <template lwc:if={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </template>
+        </div>
+    </lightning-card>
+</template>
