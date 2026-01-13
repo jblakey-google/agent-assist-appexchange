@@ -19,10 +19,16 @@
                 <identifier>c_cspTrustedSiteForm</identifier>
             </componentInstance>
         </itemInstances>
-                <itemInstances>
+        <itemInstances>
             <componentInstance>
                 <componentName>externalClientAppForm</componentName>
                 <identifier>c_externalClientAppForm</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>embeddedServiceDeploy</componentName>
+                <identifier>c_embeddedServiceDeploy</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
