@@ -1,5 +1,14 @@
 <template>
-    <lightning-card title="External Client App (OAuth)" icon-name="standard:invst_profile">
+    <lightning-card>
+        <h3 class="msg-title" slot="title">
+            <template lwc:if={doesExternalAppExist}>
+                <lightning-icon class="icon--success" icon-name="utility:success" size="small"></lightning-icon>
+            </template>
+            <template lwc:else>
+                <lightning-icon icon-name="standard:custom" size="small"></lightning-icon>
+            </template>
+            Create External Client App (OAuth)
+        </h3>
         <div class="slds-p-around_large">
             <template if:false={doesExternalAppExist}>
                 <lightning-input label="Contact email" value={contactEmail} onchange={handleEmailChange} name="email" required></lightning-input>
@@ -11,19 +20,24 @@
                 </div>
             </template>
             <template if:true={doesExternalAppExist}> 
-                <lightning-input label="Contact email" value={contactEmail} onchange={handleEmailChange} name="email" readonly></lightning-input>
                 <p class="slds-p-bottom_medium">To complete setup, follow these instructions. If you've already completed it, you can ignore this message.</p>
                     <ul class="slds-list_ordered slds-p-bottom_medium">
                         <li>
                         Click the "View External Client App" button below
                         </li>
-                        <li>Click the "Settings" tab</li>
+                        <li>Click the <strong>Settings</strong> tab and click <strong>Edit</strong></li>
                         <li>
-                            Expand the OAuth Settings section
+                            Expand the <strong>OAuth Settings</strong> section
                         </li>
                         <li>
-                            Check the "Enable OAuth" box
+                            Check the <strong>Enable OAuth</strong> box
                         </li>
+                        <li>Under <strong>App Settings</strong>, enter the following value in the Callback URL field: https://login.salesforce.com/services/oauth2/callback</li>
+                        <li>In <strong>OAuth Scopes</strong>, add the following scope: Access the identity URL service</li>
+                        <li>Under <strong>Flow Enablement</strong>, check the box for <strong>Enable Client Credentials Flow</strong></li>
+                        <li>Click <strong>Save</strong>, then select the <strong>Policies</strong> tab</li>
+                        <li>Expand the <strong>OAuth Policies</strong> section, then enable the checkbox for <strong>Enable Client Credentials Flow</strong></li>
+                        <li>A <strong>Run As</strong> field will appear. Enter your login email and click Save</li>
                     </ul>
                     <lightning-button label="View External Client App" variant="brand" onclick={handleNavigateToEcaSettings}></lightning-button>
             </template>

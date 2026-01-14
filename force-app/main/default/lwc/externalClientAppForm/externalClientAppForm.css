@@ -1,0 +1,9 @@
+.icon--success  {
+    --slds-s-icon-color-foreground: var(--slds-g-color-on-success-1);
+    --slds-c-icon-color-foreground: var(--slds-g-color-on-success-1);
+}
+
+.msg-title {
+    display: flex;
+    gap: 0.75rem;
+}
